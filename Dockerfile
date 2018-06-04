@@ -1,12 +1,12 @@
-FROM maven:3.5.0-jdk-8 AS builder-atlas
+FROM maven:3.5.3-jdk-8 AS builder-atlas
 
 ENV		REPO            https://git-wip-us.apache.org/repos/asf/atlas.git
-ENV     BRANCH          branch-0.8
-ENV		MAVEN_OPTS		"-Xmx1536m -XX:MaxPermSize=512m"
+ENV     BRANCH          branch-1.0
+ENV		MAVEN_OPTS		"-Xms2g -Xmx2g"
 
 RUN git clone --branch ${BRANCH} ${REPO} atlas \
 	&& cd atlas \
-	&& mvn clean package -Pdist,!external-hbase-solr,embedded-hbase-solr -DskipTests \
+	&& mvn clean -DskipTests package -Pdist,embedded-hbase-solr \
 	&& mv distro/target/apache-atlas-*-bin.tar.gz /apache-atlas.tar.gz
 
 FROM openjdk:8-jdk-alpine
@@ -40,9 +40,10 @@ RUN cd /tmp  \
 	&& mv zookeeper-3.4.9/* ${ATLAS_HOME}/zk \
 	&& mv ${ATLAS_HOME}/zk/conf/zoo_sample.cfg ${ATLAS_HOME}/zk/conf/zoo.cfg \
 	&& rm -rf zookeeper*
+	&& mv ${ATLAS_HOME}/conf/atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties.bak
 
 ADD supervisor/*.ini /etc/supervisor.d/
-ADD conf/atlas-application.properties /opt/atlas/conf/
+ADD conf/atlas-application.properties ${ATLAS_HOME}/conf/
 
 EXPOSE 21000
 
