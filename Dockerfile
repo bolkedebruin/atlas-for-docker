@@ -39,7 +39,7 @@ RUN cd /tmp  \
 	&& mkdir -p ${ATLAS_HOME}/zk \
 	&& mv zookeeper-3.4.9/* ${ATLAS_HOME}/zk \
 	&& mv ${ATLAS_HOME}/zk/conf/zoo_sample.cfg ${ATLAS_HOME}/zk/conf/zoo.cfg \
-	&& rm -rf zookeeper*
+	&& rm -rf zookeeper* \
 	&& mv ${ATLAS_HOME}/conf/atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties.bak
 
 ADD supervisor/*.ini /etc/supervisor.d/
